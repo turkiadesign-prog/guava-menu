@@ -52,7 +52,7 @@
     <video ref="{{ setLoaderVidRef }}" src="./assets/guava/loader-anim.mp4" muted="{{ true }}" autoPlay="{{ true }}" playsInline="{{ true }}" preload="auto" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
     <canvas ref="{{ setLoaderGlRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;pointer-events:none;padding:0 20px;box-sizing:border-box">
-      <img src="./assets/guava/logo-eden.png" alt="Guava Eden" style="width:min(205px,41vw);height:auto;display:block">
+      <img src="./assets/guava/logo-eden-sm.png" alt="Guava Eden" width="640" height="180" fetchpriority="high" style="width:min(205px,41vw);height:auto;display:block">
       <div ref="{{ setLoaderBoxRef }}" style="height:min(77vh,calc(min(552px,max(89vw,min(118vw,560px))) * 1.3333));aspect-ratio:1248/1664;margin:calc(min(77vh,calc(min(552px,max(89vw,min(118vw,560px))) * 1.3333)) * -0.2) 0 calc(min(77vh,calc(min(552px,max(89vw,min(118vw,560px))) * 1.3333)) * -0.21)"></div>
       <div style="font-family:Borna,sans-serif;font-weight:500;font-size:clamp(9px,1.08vw,13px);line-height:1.45;letter-spacing:0.08em;text-transform:uppercase;color:#E37A58;text-align:center">All-day destination<br>with a late-night soul</div>
     </div>
@@ -82,7 +82,7 @@
 </div>
 
 <div id="top" data-screen-label="menu-hero" style="position:relative;overflow:hidden;margin-top:0;height:calc(72px + clamp(240px,34vw,460px));background-color:#B41E1E">
-  <video ref="{{ setVideoRef }}" src="./assets/guava/leaves.mp4" muted="{{ true }}" autoPlay="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="auto" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
+  <video ref="{{ setVideoRef }}" src="./assets/guava/leaves.mp4" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="none" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
   <canvas ref="{{ setCanvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
 </div>
 
@@ -139,7 +139,7 @@
 </div>
 
 <footer data-screen-label="footer" style="position:relative;overflow:hidden;background:#EDB38B;color:#B41E1E">
-  <video ref="{{ setFootVidRef }}" src="./assets/guava/footer-leaves.mp4" muted="{{ true }}" autoPlay="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="auto" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
+  <video ref="{{ setFootVidRef }}" src="./assets/guava/footer-leaves.mp4" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="none" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
   <canvas ref="{{ setFootCvRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0"></canvas>
   <div data-m="foot-pad" style="position:relative;z-index:1;padding:clamp(70px,9vw,130px) clamp(20px,4vw,48px) 18px">
     <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:32px">
@@ -224,7 +224,7 @@ class Component extends DCLogic {
         gl.uniform1f(uTm, performance.now() / 1000);
         gl.uniform2f(uRs, W, H);
         gl.uniform2f(uOf, 1 - sx, (1 - sy) * 0.25);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+        if (vid.readyState >= 2) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       };
     };
@@ -257,7 +257,6 @@ class Component extends DCLogic {
         }
       }
     };
-    vid.play && vid.play().catch(() => {});
     draw();
   }
 
@@ -294,10 +293,9 @@ class Component extends DCLogic {
       if (window.innerWidth <= 600) { sx *= 0.6; sy *= 0.6; }
       gl.uniform2f(uSc, sx, sy); gl.uniform2f(uOf, (1 - sx) / 2, (1 - sy) / 2);
       gl.uniform1f(uTm, performance.now() / 1000); gl.uniform2f(uRs, W, H);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+      if (vid.readyState >= 2) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
-    vid.play && vid.play().catch(() => {});
     draw();
   }
 
@@ -366,7 +364,7 @@ class Component extends DCLogic {
       const box = this._lbox && this._lbox.getBoundingClientRect(), cr = cv.getBoundingClientRect();
       if (box && box.width) gl.uniform4f(uBox, (box.left - cr.left) / cr.width, (box.top - cr.top) / cr.height, box.width / cr.width, box.height / cr.height);
       else { const va = vid.videoWidth / vid.videoHeight; let bw = W * 0.6, bh = bw / va; if (bh > H * 0.5) { bh = H * 0.5; bw = bh * va; } gl.uniform4f(uBox, (1 - bw / W) / 2, (1 - bh / H) / 2, bw / W, bh / H); }
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+      if (vid.readyState >= 2) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
     draw();
@@ -376,8 +374,37 @@ class Component extends DCLogic {
     if (this._loaderEnding || !this.state.loading) return;
     this._loaderEnding = true;
     clearTimeout(this._loadTimer);
+    clearTimeout(this._stallTimer);
     this.setState({ loaderFade: true });
     setTimeout(() => this.setState({ loading: false }), 250);
+    this.playBg();
+  }
+
+  armStall() {
+    clearTimeout(this._stallTimer);
+    const v = this._lvid; if (!v) return;
+    const t0 = v.currentTime;
+    this._stallTimer = setTimeout(() => { if (this.state.loading && v.currentTime === t0) this.endLoader(); }, 3000);
+  }
+
+  playBg() {
+    const v = this._vid;
+    if (!v || v._gvPlaying) return;
+    v._gvPlaying = true;
+    v.preload = 'auto';
+    v.play && v.play().catch(() => {});
+  }
+
+  watchFoot() {
+    const v = this._fvid;
+    if (!v || this._footIO) return;
+    this._footIO = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (e.isIntersecting && !this.state.loading) { v.preload = 'auto'; v.play && v.play().catch(() => {}); }
+        else if (!e.isIntersecting) v.pause();
+      });
+    }, { rootMargin: '300px 0px' });
+    this._footIO.observe(v.parentElement || v);
   }
 
   componentDidMount() {
@@ -394,7 +421,7 @@ class Component extends DCLogic {
       this.setState({ data, menu: data.food, active: (data.food[0] && data.food[0].key) || null }, () => this.setupSpy());
     }).catch(() => {});
     if (this.state.loading) {
-      this._loadTimer = setTimeout(() => this.endLoader(), 15000);
+      this._loadTimer = setTimeout(() => this.endLoader(), 10000);
     }
   }
 
@@ -406,6 +433,7 @@ class Component extends DCLogic {
     window.removeEventListener('touchstart', this._onTouchStart);
     window.removeEventListener('touchmove', this._onTouchMove);
     window.removeEventListener('scroll', this._onSpy);
+    if (this._footIO) this._footIO.disconnect();
   }
 
   setupSpy() {
@@ -467,17 +495,17 @@ class Component extends DCLogic {
       showLoader: this.state.loading,
       goTop: e => { if (e && e.preventDefault) e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
       headerBg: this.state.atTop
-        ? 'background-color:transparent;box-shadow:0 2px 6px rgba(51,38,15,0.08)'
-        : 'background-color:transparent;box-shadow:0 2px 6px rgba(51,38,15,0.12)',
+        ? 'background-color:#E37A58;box-shadow:0 2px 6px rgba(51,38,15,0.08)'
+        : 'background-color:#E37A58;box-shadow:0 2px 6px rgba(51,38,15,0.12)',
       headerPatternOpacity: this.state.atTop ? 1 : 0,
-      setVideoRef: el => { if (el) { el.muted = true; this._vid = el; this.startLeaves(); } },
-      setFootVidRef: el => { if (el) { el.muted = true; this._fvid = el; this.startFootLeaves(); } },
+      setVideoRef: el => { if (el) { el.muted = true; this._vid = el; this.startLeaves(); if (!this.state.loading) this.playBg(); } },
+      setFootVidRef: el => { if (el) { el.muted = true; this._fvid = el; this.startFootLeaves(); this.watchFoot(); } },
       setFootCvRef: el => { if (el) { this._fcv2 = el; this.startFootLeaves(); } },
       setLoaderCanvasRef: el => { this._lcv = el || null; this._lctx = null; },
       loaderOpacity: this.state.loaderFade ? 0 : 1,
       setLoaderBoxRef: el => { this._lbox = el; },
       setLoaderGlRef: el => { if (el) { this._lgc = el; this.startLoaderGl(); } },
-      setLoaderVidRef: el => { if (el) { this._lvid = el; this.startLoaderGl(); } if (el && !el._gvBound) { el._gvBound = true; el.muted = true; el.addEventListener('ended', () => this.endLoader()); el.addEventListener('error', () => this.endLoader()); el.play && el.play().catch(() => {}); } },
+      setLoaderVidRef: el => { if (el) { this._lvid = el; this.startLoaderGl(); } if (el && !el._gvBound) { el._gvBound = true; el.muted = true; el.addEventListener('ended', () => this.endLoader()); el.addEventListener('error', () => this.endLoader()); el.addEventListener('stalled', () => this.armStall()); el.addEventListener('waiting', () => this.armStall()); const p = el.play && el.play(); if (p && p.catch) p.catch(() => this.endLoader()); this.armStall(); } },
       setHeaderCanvasRef: el => { if (el) { this._hcv = el; this._hctx = null; } },
       setCanvasRef: el => { if (el) { this._cv = el; this.startLeaves(); } },
       growDelay: '0.2s',
