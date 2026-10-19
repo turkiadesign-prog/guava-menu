@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Guava</title>
+  <style>
+    @font-face { font-family: 'Clover Fields Serif'; src: url('./fonts/clover-fields-serif.otf') format('opentype'); font-display: swap; }
+    @font-face { font-family: 'Minion Variable Concept'; src: url('./fonts/minion-variable-concept.otf') format('opentype'); font-display: swap; }
+    @font-face { font-family: 'Gantari'; src: url('./fonts/gantari-variable.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
+    @font-face { font-family: 'Borna'; src: url('./fonts/borna-medium.otf') format('opentype'); font-weight: 500; font-display: swap; }
+    html, body { margin: 0; padding: 0; background: #F8F8F7; color: #33260F; font-family: 'Borna', sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #B41E1E; text-decoration: none; }
+    a:hover { color: #E37A58; }
+    .gv-noscroll::-webkit-scrollbar { display: none; }
+    @keyframes gvFooterLeaves { 0%,100% { transform: scale(1) rotate(0deg) translateY(0); filter: brightness(1); } 50% { transform: scale(1.05) rotate(-1.2deg) translateY(-1.5%); filter: brightness(1.06); } }
+    @keyframes gvRise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes gvBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes gvFadeOut { to { opacity: 0; visibility: hidden; } }
+    @keyframes gvSway { 0%,100% { transform: translateX(0) skewX(0deg) scale(1); } 30% { transform: translateX(-6px) skewX(-0.7deg) scale(1.008); } 65% { transform: translateX(7px) skewX(0.8deg) scale(1.004); } }
+    @keyframes gvGrow { 0% { clip-path: inset(100% 0 0 0); transform: scaleY(0.9); } 100% { clip-path: inset(0 0 0 0); transform: scaleY(1); } }
+    @keyframes gvBreathe { 0%,100% { transform: scale(1); opacity: 0.82; } 50% { transform: scale(1.06); opacity: 1; } }
+    [data-screen-label="category-bar"] { position: -webkit-sticky; position: sticky; top: 72px; }
+    html, body, #dc-root, .sc-host { height: auto !important; min-height: 100%; }
+    @media (max-width: 600px) {
+      [data-m="sec-title"] { font-size: 26px !important; }
+      [data-m="sec-sub"] { font-size: 10px !important; letter-spacing: 0.14em !important; }
+      [data-m="sec-note"] { font-size: 12px !important; }
+      [data-m="card-name"], [data-m="card-price"] { font-size: 13px !important; }
+      [data-m="card-desc"] { font-size: 12.5px !important; }
+      [data-m="group"] { font-size: 11px !important; padding: 5px 11px !important; }
+      [data-m="hlang"] { font-size: 11px !important; }
+      [data-m="hicon"], [data-m="hicon-img"] { height: 38px !important; }
+      [data-m="hicon"] { position: static !important; transform: none !important; order: -1; }
+      [data-m="gnav"] { position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%,-50%) !important; }
+      [data-m="foot-pad"] { padding: 44px 18px 14px !important; }
+      [data-screen-label="footer"] [data-m="foot-pad"] div, [data-screen-label="footer"] a, [data-screen-label="footer"] button { font-size: 11px !important; }
+      [data-m="tab"] { font-size: 12.5px !important; padding: 8px 14px !important; }
+    }
+    @media (prefers-reduced-motion: reduce) { .gv-sway, .gv-grow, .gv-breathe { animation: none !important; clip-path: none !important; } }
+  </style>
+  <link rel="preload" href="./assets/guava/loader-anim.mp4" as="video" type="video/mp4" fetchpriority="high">
+</helmet>
+
+<sc-if value="{{ showLoader }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="loading" style="position:fixed;inset:0;z-index:100;background:#322410;opacity:{{ loaderOpacity }};transition:opacity .25s ease">
+    <video ref="{{ setLoaderVidRef }}" src="./assets/guava/loader-anim.mp4" muted="{{ true }}" autoPlay="{{ true }}" playsInline="{{ true }}" preload="auto" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
+    <canvas ref="{{ setLoaderGlRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;pointer-events:none;padding:0 20px;box-sizing:border-box">
+      <img src="./assets/guava/logo-eden.png" alt="Guava Eden" style="width:min(205px,41vw);height:auto;display:block">
+      <div ref="{{ setLoaderBoxRef }}" style="height:min(77vh,calc(min(552px,max(89vw,min(118vw,560px))) * 1.3333));aspect-ratio:1248/1664;margin:calc(min(77vh,calc(min(552px,max(89vw,min(118vw,560px))) * 1.3333)) * -0.2) 0 calc(min(77vh,calc(min(552px,max(89vw,min(118vw,560px))) * 1.3333)) * -0.21)"></div>
+      <div style="font-family:Borna,sans-serif;font-weight:500;font-size:clamp(9px,1.08vw,13px);line-height:1.45;letter-spacing:0.08em;text-transform:uppercase;color:#E37A58;text-align:center">All-day destination<br>with a late-night soul</div>
+    </div>
+  </div>
+</sc-if>
+
+<div data-screen-label="header" style="position:fixed;top:0;left:0;right:0;z-index:50;{{ headerBg }};transition:background-color .3s;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,48px);box-sizing:border-box">
+  <canvas ref="{{ setHeaderCanvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;z-index:-1;pointer-events:none"></canvas>
+  
+  <nav data-m="gnav" style="display:flex;gap:4px;padding:3px;border-radius:999px;border:1px solid {{ navBorder }}">
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+      <button data-m="group" onClick="{{ g.onClick }}" style="{{ g.style }}">{{ g.label }}</button>
+    </sc-for>
+  </nav>
+  <a data-m="hicon" href="#top" onClick="{{ goTop }}" aria-label="Guava" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;height:58px">
+    <img data-m="hicon-img" src="./assets/guava/logo-icon.svg" alt="Guava" style="height:58px;width:auto;display:block">
+  </a>
+  
+  <div style="display:flex;align-items:center;gap:24px">
+  
+  <div style="display:flex;gap:14px">
+    <sc-for list="{{ headerLangs }}" as="l" hint-placeholder-count="2">
+      <button data-m="hlang" onClick="{{ l.onClick }}" style="{{ l.style }}">{{ l.label }}</button>
+    </sc-for>
+  </div>
+  </div>
+</div>
+
+<div id="top" data-screen-label="menu-hero" style="position:relative;overflow:hidden;margin-top:0;height:calc(72px + clamp(240px,34vw,460px));background-color:#B41E1E">
+  <video ref="{{ setVideoRef }}" src="./assets/guava/leaves.mp4" muted="{{ true }}" autoPlay="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="auto" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
+  <canvas ref="{{ setCanvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
+</div>
+
+<div data-screen-label="category-bar" style="position:sticky;top:72px;z-index:40;background:#544024;border-top:1px solid rgba(48,42,15,0.4)">
+  <div style="display:flex;align-items:center;gap:10px;max-width:1280px;margin:0 auto;padding:14px clamp(12px,4vw,48px);box-sizing:border-box">
+    <button onClick="{{ tabsLeft }}" aria-label="Previous categories" style="flex-shrink:0;width:42px;height:42px;border-radius:50%;border:1px solid rgba(252,242,234,0.45);background:none;color:#FCF2EA;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+    <div ref="{{ setTabsRef }}" class="gv-noscroll" style="flex:1;min-width:0;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth">
+      <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="8">
+        <button data-m="tab" data-tab="{{ tab.key }}" onClick="{{ tab.onClick }}" style="{{ tab.style }}">{{ tab.label }}</button>
+      </sc-for>
+    </div>
+    <button onClick="{{ tabsRight }}" aria-label="Next categories" style="flex-shrink:0;width:42px;height:42px;border-radius:50%;border:1px solid rgba(252,242,234,0.45);background:none;color:#FCF2EA;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
+  </div>
+</div>
+
+<div id="menu" data-screen-label="menu" style="max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,48px) 96px;box-sizing:border-box">
+  <sc-if value="{{ groupEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:96px 0;text-align:center;font-family:'Clover Fields Serif',serif;font-size:32px;color:#544024">{{ t.drinksSoon }}</div>
+  </sc-if>
+  <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="2">
+    <section id="{{ sec.anchor }}" data-cat="{{ sec.key }}" style="padding-top:48px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:18px;margin-bottom:28px;border-bottom:1px solid #33260F">
+        <h2 data-m="sec-title" style="margin:0;font-family:'Clover Fields Serif',serif;font-weight:400;font-size:clamp(32px,4vw,48px);line-height:1;color:#33260F">{{ sec.title }}</h2>
+        <span data-m="sec-sub" style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#544024">{{ sec.subtitle }}</span>
+      </div>
+      <sc-if value="{{ sec.note }}" hint-placeholder-val="{{ false }}">
+        <p data-m="sec-note" style="margin:-12px 0 28px;font-family:Gantari,sans-serif;font-size:14px;color:#7A6A55">{{ sec.note }}</p>
+      </sc-if>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,max(240px,calc((100% - 48px) / 3))),1fr));gap:36px 24px">
+        <sc-for list="{{ sec.items }}" as="item" hint-placeholder-count="4">
+          <article style="display:flex;flex-direction:column;background:#FBE9DC;border-radius:14px;overflow:hidden">
+            <sc-if value="{{ item.showImg }}" hint-placeholder-val="{{ true }}">
+            <div style="aspect-ratio:4/3;background:#EDB38B;overflow:hidden">
+              <sc-if value="{{ item.hasImg }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ item.img }}" alt="{{ item.name }}" loading="lazy" decoding="async" width="900" height="675" style="width:100%;height:100%;object-fit:cover;display:block">
+              </sc-if>
+            </div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px 20px;flex:1">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+                <h3 data-m="card-name" style="margin:0;font-family:'Borna',sans-serif;font-weight:500;font-size:15px;text-transform:uppercase;line-height:1.15;color:#33260F;text-wrap:pretty">{{ item.name }}</h3>
+                <span data-m="card-price" style="flex-shrink:0;font-family:'Borna',sans-serif;font-weight:500;font-size:15px;color:#B41E1E;white-space:pre;text-align:right;line-height:1.4">{{ item.price }}</span>
+              </div>
+              <sc-if value="{{ item.desc }}" hint-placeholder-val="{{ false }}">
+                <p data-m="card-desc" style="margin:0;font-family:Gantari,sans-serif;font-weight:400;font-size:14px;line-height:1.3;color:#7A6A55;text-wrap:pretty">{{ item.desc }}</p>
+              </sc-if>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+      <div style="height:24px"></div>
+    </section>
+  </sc-for>
+</div>
+
+<footer data-screen-label="footer" style="position:relative;overflow:hidden;background:#EDB38B;color:#B41E1E">
+  <video ref="{{ setFootVidRef }}" src="./assets/guava/footer-leaves.mp4" muted="{{ true }}" autoPlay="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="auto" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></video>
+  <canvas ref="{{ setFootCvRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0"></canvas>
+  <div data-m="foot-pad" style="position:relative;z-index:1;padding:clamp(70px,9vw,130px) clamp(20px,4vw,48px) 18px">
+    <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:32px">
+      <img src="./assets/guava/logo-main.svg" alt="Guava" style="height:clamp(36px,5vw,60px);width:auto;display:block">
+      <div style="display:flex;gap:48px;flex-wrap:nowrap">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#B41E1E">{{ t.pages }}</div>
+          <a href="#top" onClick="{{ goTop }}" style="color:#B41E1E;font-size:15px">{{ t.menu }}</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#B41E1E">{{ t.language }}</div>
+          <div style="display:flex;gap:14px">
+            <sc-for list="{{ langs }}" as="l" hint-placeholder-count="2">
+              <button onClick="{{ l.onClick }}" style="{{ l.style }}">{{ l.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1280px;margin:24px auto 0;padding-top:14px;border-top:1px solid rgba(180,30,30,0.35);font-size:12px;letter-spacing:0.08em;color:#B41E1E">© 2026 Guava</div>
+  </div>
+</footer>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLanguage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ro&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;'en' | 'ro'&quot;},&quot;showLoading&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const T = {
+  en: { menu: 'Menu', food: 'Food', drinks: 'Drinks', drinksSoon: 'Drinks menu coming soon', pages: 'Pages', language: 'Language', lei: 'lei' },
+  ro: { menu: 'Meniu', food: 'Mâncare', drinks: 'Băuturi', drinksSoon: 'Meniul de băuturi în curând', pages: 'Pagini', language: 'Limbă', lei: 'lei' }
+};
+const NO_IMG = ['Grilled goat cheese', 'Mixed pickles'];
+const slug = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+class Component extends DCLogic {
+  state = {
+    lang: (typeof localStorage !== 'undefined' && localStorage.getItem('gv-lang')) || (this.props.defaultLanguage === 'ro' ? 'ro' : 'en'),
+    loading: this.props.showLoading !== false,
+    atTop: true,
+    data: { food: [], drinks: [] },
+    group: 'food',
+    menu: [],
+    active: null
+  };
+
+  setGroup(group) {
+    const list = this.state.data[group] || [];
+    this._lockUntil = Date.now() + 800;
+    this.setState({ group, menu: list, active: list[0] ? list[0].key : null }, () => {
+      if (this._tabs) this._tabs.scrollTo({ left: 0 });
+      window.scrollTo({ top: this.menuTop() - 220 > 0 ? this.menuTop() - 220 : 0, behavior: 'smooth' });
+    });
+  }
+
+  startLeaves() {
+    const cv = this._cv, vid = this._vid;
+    if (!cv || !vid || this._gl) return;
+    const mk = (canvas, a, b, useHy) => {
+      const gl = canvas.getContext('webgl', { premultipliedAlpha: false });
+      if (!gl) return null;
+      const vs = 'attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
+      const fs = 'precision highp float;varying vec2 uv;uniform sampler2D t;uniform vec2 sc;uniform vec2 of;uniform vec3 a;uniform vec3 b;uniform float hy;uniform float tm;uniform vec2 rs;float gr(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}void main(){vec2 q=of+uv*sc;vec3 c=texture2D(t,q).rgb;float l=dot(c,vec3(.299,.587,.114));float k=smoothstep(.47,.57,l);vec3 bg=uv.y<hy?vec3(227./255.,122./255.,88./255.):a;vec3 col=mix(bg,b,k);float g=gr(floor(uv*rs/1.5)+fract(tm*7.13)*91.7)-.5;gl_FragColor=vec4(col+g*.012,1.);}';
+      const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+      const pr = gl.createProgram();
+      gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+      const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.uniform3f(gl.getUniformLocation(pr, 'a'), a[0]/255, a[1]/255, a[2]/255);
+      gl.uniform3f(gl.getUniformLocation(pr, 'b'), b[0]/255, b[1]/255, b[2]/255);
+      const uSc = gl.getUniformLocation(pr, 'sc'), uOf = gl.getUniformLocation(pr, 'of'), uHy = gl.getUniformLocation(pr, 'hy'), uTm = gl.getUniformLocation(pr, 'tm'), uRs = gl.getUniformLocation(pr, 'rs');
+      return (dpr) => {
+        const W = Math.round(canvas.clientWidth * dpr), H = Math.round(canvas.clientHeight * dpr);
+        if (!W || !H) return;
+        if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; gl.viewport(0, 0, W, H); }
+        const va = vid.videoWidth / vid.videoHeight, ca = W / H;
+        let sx = 1, sy = 1;
+        if (ca > va) sy = va / ca; else sx = ca / va;
+        gl.uniform2f(uSc, sx, sy);
+        gl.uniform1f(uHy, useHy ? (72 * dpr) / H : -1.0);
+        gl.uniform1f(uTm, performance.now() / 1000);
+        gl.uniform2f(uRs, W, H);
+        gl.uniform2f(uOf, 1 - sx, (1 - sy) * 0.25);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      };
+    };
+    const main = mk(cv, [180, 30, 30], [237, 179, 139], true);
+    if (!main) return;
+    this._gl = true;
+    const draw = () => {
+      this._raf = requestAnimationFrame(draw);
+      if (vid.readyState < 2) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      main(dpr);
+      const W = cv.width, H = cv.height;
+      const hc = this._hcv;
+      if (hc) {
+        const hw = Math.round(hc.clientWidth * dpr), hh = Math.round(hc.clientHeight * dpr);
+        if (hc.width !== hw || hc.height !== hh) { hc.width = hw; hc.height = hh; }
+        const ctx = this._hctx || (this._hctx = hc.getContext('2d'));
+        ctx.drawImage(cv, 0, 0, W, Math.min(H, hh), 0, 0, hw, hh);
+      }
+      const lc = this._lcv;
+      if (lc) {
+        const lw = Math.round(lc.clientWidth * dpr), lh = Math.round(lc.clientHeight * dpr);
+        if (lw && lh) {
+          if (lc.width !== lw || lc.height !== lh) { lc.width = lw; lc.height = lh; }
+          const lctx = this._lctx || (this._lctx = lc.getContext('2d'));
+          const sy0 = Math.round(72 * dpr), sh0 = H - sy0;
+          let sw = W, sh = sh0, sx = 0, sy = sy0;
+          if (lw / lh > W / sh0) { sh = W * lh / lw; sy = sy0 + (sh0 - sh) / 2; } else { sw = sh0 * lw / lh; sx = (W - sw) / 2; }
+          lctx.drawImage(cv, sx, sy, sw, sh, 0, 0, lw, lh);
+        }
+      }
+    };
+    vid.play && vid.play().catch(() => {});
+    draw();
+  }
+
+  startFootLeaves() {
+    const cv = this._fcv2, vid = this._fvid;
+    if (!cv || !vid || this._fgl) return;
+    const gl = cv.getContext('webgl', { premultipliedAlpha: false });
+    if (!gl) return;
+    this._fgl = gl;
+    const vs = 'attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
+    const fs = 'precision highp float;varying vec2 uv;uniform sampler2D t;uniform vec2 sc;uniform vec2 of;uniform vec3 a;uniform vec3 b;uniform float tm;uniform vec2 rs;float gr(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}void main(){vec2 q=of+uv*sc;vec3 c=texture2D(t,q).rgb;float l=dot(c,vec3(.299,.587,.114));float k=smoothstep(.47,.57,l);float g=gr(floor(uv*rs/1.5)+fract(tm*7.13)*91.7)-.5;gl_FragColor=vec4(mix(a,b,k)+g*.012,1.);}';
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.uniform3f(gl.getUniformLocation(pr, 'a'), 237/255, 179/255, 139/255);
+    gl.uniform3f(gl.getUniformLocation(pr, 'b'), 227/255, 122/255, 88/255);
+    const uSc = gl.getUniformLocation(pr, 'sc'), uOf = gl.getUniformLocation(pr, 'of'), uTm = gl.getUniformLocation(pr, 'tm'), uRs = gl.getUniformLocation(pr, 'rs');
+    const draw = () => {
+      this._fRaf = requestAnimationFrame(draw);
+      if (vid.readyState < 2) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const W = Math.round(cv.clientWidth * dpr), H = Math.round(cv.clientHeight * dpr);
+      if (!W || !H) return;
+      if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; gl.viewport(0, 0, W, H); }
+      const va = vid.videoWidth / vid.videoHeight, ca = W / H;
+      let sx = 1, sy = 1;
+      if (ca > va) sy = va / ca; else sx = ca / va;
+      if (window.innerWidth <= 600) { sx *= 0.6; sy *= 0.6; }
+      gl.uniform2f(uSc, sx, sy); gl.uniform2f(uOf, (1 - sx) / 2, (1 - sy) / 2);
+      gl.uniform1f(uTm, performance.now() / 1000); gl.uniform2f(uRs, W, H);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+    vid.play && vid.play().catch(() => {});
+    draw();
+  }
+
+  startPlant() {
+    const cv = this._plc;
+    if (!cv) return;
+    const img = new Image();
+    img.onload = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const W = Math.round(cv.clientWidth * dpr), H = Math.round(cv.clientHeight * dpr);
+      cv.width = W; cv.height = H;
+      const tint = document.createElement('canvas'); tint.width = W; tint.height = H;
+      const tx = tint.getContext('2d');
+      tx.drawImage(img, 0, 0, W, H);
+      tx.globalCompositeOperation = 'source-in'; tx.fillStyle = '#EDB38B'; tx.fillRect(0, 0, W, H);
+      const x = cv.getContext('2d');
+      const ease = t => t <= 0 ? 0 : t >= 1 ? 1 : 1 - Math.pow(1 - t, 3);
+      const seg = (t, a, b) => ease((t - a) / (b - a));
+      const fcx = W * 0.5, fcy = H * 0.31, frx = W * 0.3, fry = H * 0.215;
+      const t0 = performance.now();
+      const frame = () => {
+        const t = (performance.now() - t0) / 1000;
+        x.clearRect(0, 0, W, H);
+        const st = seg(t, 0.1, 1.3);
+        if (st > 0) { x.save(); x.beginPath(); x.rect(W * 0.27, H - H * (st * 0.6), W * 0.46, H * (st * 0.6)); x.clip(); x.beginPath(); x.rect(W * 0.43, 0, W * 0.14, H); x.rect(W * 0.27, H * 0.82, W * 0.46, H * 0.18); x.clip(); x.drawImage(tint, 0, 0); x.restore(); }
+        const lt = seg(t, 0.8, 3.0);
+        if (lt > 0) { x.save(); x.beginPath(); x.arc(W * 0.5, H, lt * H * 1.25, 0, Math.PI * 2); x.ellipse(fcx, fcy, frx, fry, 0, 0, Math.PI * 2); x.clip('evenodd'); x.drawImage(tint, 0, 0); x.restore(); }
+        const ft = seg(t, 2.5, 3.7);
+        if (ft > 0) { x.save(); x.beginPath(); x.ellipse(fcx, fcy, frx, fry, 0, 0, Math.PI * 2); x.clip(); x.globalAlpha = ft; const sc = 0.35 + 0.65 * ft; x.translate(fcx, fcy); x.rotate((1 - ft) * -0.5); x.scale(sc, sc); x.translate(-fcx, -fcy); x.drawImage(tint, 0, 0); x.restore(); }
+        if (t < 4.6) this._plRaf = requestAnimationFrame(frame); else this.endLoader();
+      };
+      frame();
+    };
+    img.onerror = () => this.endLoader();
+    img.src = './assets/guava/loader-plant.png';
+  }
+
+  startLoaderGl() {
+    const cv = this._lgc, vid = this._lvid;
+    if (!cv || !vid || this._lgl) return;
+    const gl = cv.getContext('webgl', { premultipliedAlpha: false });
+    if (!gl) return;
+    this._lgl = gl;
+    const vs = 'attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
+    const fs = 'precision highp float;varying vec2 uv;uniform sampler2D t;uniform vec4 box;uniform vec3 a;uniform vec3 b;void main(){vec2 q=(uv-box.xy)/box.zw;if(q.x<0.||q.y<0.||q.x>1.||q.y>1.){gl_FragColor=vec4(a,1.);return;}vec3 c=texture2D(t,q).rgb;float l=dot(c,vec3(.299,.587,.114));float k=smoothstep(.178,.29,l);gl_FragColor=vec4(mix(a,b,k),1.);}';
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.uniform3f(gl.getUniformLocation(pr, 'a'), 50/255, 36/255, 16/255);
+    gl.uniform3f(gl.getUniformLocation(pr, 'b'), 96/255, 79/255, 51/255);
+    const uBox = gl.getUniformLocation(pr, 'box');
+    const draw = () => {
+      if (!this.state.loading) return;
+      this._lRaf = requestAnimationFrame(draw);
+      if (vid.readyState < 2) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const W = Math.round(cv.clientWidth * dpr), H = Math.round(cv.clientHeight * dpr);
+      if (!W || !H) return;
+      if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; gl.viewport(0, 0, W, H); }
+      const box = this._lbox && this._lbox.getBoundingClientRect(), cr = cv.getBoundingClientRect();
+      if (box && box.width) gl.uniform4f(uBox, (box.left - cr.left) / cr.width, (box.top - cr.top) / cr.height, box.width / cr.width, box.height / cr.height);
+      else { const va = vid.videoWidth / vid.videoHeight; let bw = W * 0.6, bh = bw / va; if (bh > H * 0.5) { bh = H * 0.5; bw = bh * va; } gl.uniform4f(uBox, (1 - bw / W) / 2, (1 - bh / H) / 2, bw / W, bh / H); }
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+    draw();
+  }
+
+  endLoader() {
+    if (this._loaderEnding || !this.state.loading) return;
+    this._loaderEnding = true;
+    clearTimeout(this._loadTimer);
+    this.setState({ loaderFade: true });
+    setTimeout(() => this.setState({ loading: false }), 250);
+  }
+
+  componentDidMount() {
+    this._startedWithLoader = this.state.loading;
+    this._onScrollTop = () => {
+      const top = window.scrollY < 8;
+      if (top !== this.state.atTop) this.setState({ atTop: top });
+    };
+    window.addEventListener('scroll', this._onScrollTop, { passive: true });
+    this._onScrollTop();
+    this.setupSpy();
+    fetch('./guava/guava-menu.json').then(r => r.json()).then(d => {
+      const data = { food: d.food || [], drinks: d.drinks || [] };
+      this.setState({ data, menu: data.food, active: (data.food[0] && data.food[0].key) || null }, () => this.setupSpy());
+    }).catch(() => {});
+    if (this.state.loading) {
+      this._loadTimer = setTimeout(() => this.endLoader(), 15000);
+    }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._loadTimer);
+    window.removeEventListener('scroll', this._onScrollTop);
+    cancelAnimationFrame(this._raf);
+    window.removeEventListener('wheel', this._onWheel);
+    window.removeEventListener('touchstart', this._onTouchStart);
+    window.removeEventListener('touchmove', this._onTouchMove);
+    window.removeEventListener('scroll', this._onSpy);
+  }
+
+  setupSpy() {
+    if (this._onSpy) return;
+    const OFFSET = 150;
+    const run = () => {
+      this._spyRaf = 0;
+      if (Date.now() < (this._lockUntil || 0)) return;
+      const secs = document.querySelectorAll('#menu [data-cat]');
+      let cur = null;
+      secs.forEach(el => { if (el.getBoundingClientRect().top - OFFSET <= 1) cur = el.getAttribute('data-cat'); });
+      if (!cur && secs[0]) cur = secs[0].getAttribute('data-cat');
+      if (cur) this.setActive(cur);
+    };
+    this._onSpy = () => { if (!this._spyRaf) this._spyRaf = requestAnimationFrame(run); };
+    window.addEventListener('scroll', this._onSpy, { passive: true });
+    run();
+  }
+
+  menuTop() {
+    const el = document.getElementById('menu');
+    return el ? el.getBoundingClientRect().top + window.scrollY - 130 : 0;
+  }
+
+  step(dir) {
+    const menu = this.state.menu;
+    const i = menu.findIndex(c => c.key === this.state.active);
+    const n = menu[i + dir];
+    if (n) this.jumpTo(n.key);
+  }
+
+  setActive(key) {
+    if (!key || key === this.state.active) return;
+    this.setState({ active: key }, () => {
+      const bar = this._tabs;
+      const btn = bar && bar.querySelector('[data-tab="' + key + '"]');
+      if (bar && btn) bar.scrollTo({ left: btn.offsetLeft - bar.clientWidth / 2 + btn.offsetWidth / 2, behavior: 'smooth' });
+    });
+  }
+
+  jumpTo(key) {
+    const el = document.getElementById('cat-' + key);
+    this._lockUntil = Date.now() + 900;
+    this.setActive(key);
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 140, behavior: 'smooth' });
+  }
+
+  setLang(lang) {
+    try { localStorage.setItem('gv-lang', lang); } catch (e) {}
+    this.setState({ lang });
+  }
+
+  renderVals() {
+    const lang = this.state.lang;
+    const t = T[lang];
+    const menu = this.state.menu;
+    return {
+      t,
+      showLoader: this.state.loading,
+      goTop: e => { if (e && e.preventDefault) e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
+      headerBg: this.state.atTop
+        ? 'background-color:transparent;box-shadow:0 2px 6px rgba(51,38,15,0.08)'
+        : 'background-color:transparent;box-shadow:0 2px 6px rgba(51,38,15,0.12)',
+      headerPatternOpacity: this.state.atTop ? 1 : 0,
+      setVideoRef: el => { if (el) { el.muted = true; this._vid = el; this.startLeaves(); } },
+      setFootVidRef: el => { if (el) { el.muted = true; this._fvid = el; this.startFootLeaves(); } },
+      setFootCvRef: el => { if (el) { this._fcv2 = el; this.startFootLeaves(); } },
+      setLoaderCanvasRef: el => { this._lcv = el || null; this._lctx = null; },
+      loaderOpacity: this.state.loaderFade ? 0 : 1,
+      setLoaderBoxRef: el => { this._lbox = el; },
+      setLoaderGlRef: el => { if (el) { this._lgc = el; this.startLoaderGl(); } },
+      setLoaderVidRef: el => { if (el) { this._lvid = el; this.startLoaderGl(); } if (el && !el._gvBound) { el._gvBound = true; el.muted = true; el.addEventListener('ended', () => this.endLoader()); el.addEventListener('error', () => this.endLoader()); el.play && el.play().catch(() => {}); } },
+      setHeaderCanvasRef: el => { if (el) { this._hcv = el; this._hctx = null; } },
+      setCanvasRef: el => { if (el) { this._cv = el; this.startLeaves(); } },
+      growDelay: '0.2s',
+      growDelayHeader: '1.7s',
+      iconSrc: './assets/guava/logo-icon.svg',
+      navBorder: 'rgba(180,30,30,0.5)',
+      groupEmpty: menu.length === 0 && this.state.group === 'drinks',
+      groups: ['food', 'drinks'].map(g => {
+        const on = g === this.state.group;
+        return {
+          label: t[g],
+          onClick: () => this.setGroup(g),
+          style: 'cursor:pointer;border:none;padding:6px 15px;border-radius:999px;font-family:Borna,sans-serif;font-size:13px;letter-spacing:0.04em;background:' + (on ? '#B41E1E' : 'transparent') + ';color:' + (on ? '#FFFFFF' : '#B41E1E') + ';transition:background .2s,color .2s'
+        };
+      }),
+      setTabsRef: el => { this._tabs = el; },
+      tabsLeft: () => { if (this._tabs) this._tabs.scrollBy({ left: -this._tabs.clientWidth * 0.7, behavior: 'smooth' }); },
+      tabsRight: () => { if (this._tabs) this._tabs.scrollBy({ left: this._tabs.clientWidth * 0.7, behavior: 'smooth' }); },
+      headerLangs: ['en', 'ro'].map(l => ({
+        label: l.toUpperCase(),
+        onClick: () => this.setLang(l),
+        style: 'background:none;border:none;padding:0 0 3px;cursor:pointer;font-family:Borna,sans-serif;font-size:13px;letter-spacing:0.12em;color:#B41E1E;border-bottom:1px solid ' + (l === lang ? '#B41E1E' : 'transparent')
+      })),
+      langs: ['en', 'ro'].map(l => ({
+        label: l.toUpperCase(),
+        onClick: () => this.setLang(l),
+        style: 'background:none;border:none;padding:0 0 3px;cursor:pointer;font-family:Borna,sans-serif;font-size:13px;letter-spacing:0.12em;color:#B41E1E;border-bottom:1px solid ' + (l === lang ? '#B41E1E' : 'transparent')
+      })),
+      tabs: menu.map(c => {
+        const on = c.key === this.state.active;
+        return {
+          key: c.key,
+          label: lang === 'ro' ? c.ro : c.en,
+          onClick: () => this.jumpTo(c.key),
+          style: 'flex-shrink:0;cursor:pointer;padding:11px 20px;border-radius:999px;font-family:Gantari,sans-serif;font-weight:400;font-size:15px;white-space:nowrap;border:1px solid ' + (on ? '#302A0F' : 'rgba(252,242,234,0.45)') + ';background:' + (on ? '#302A0F' : 'transparent') + ';color:' + (on ? '#FFFFFF' : '#FCF2EA') + ';transition:background .2s,color .2s,border-color .2s'
+        };
+      }),
+      setEndRef: el => { this._end = el; },
+      sections: menu.map((c, i) => ({ c, i })).map(({ c, i }) => ({
+        key: c.key,
+        hasPrev: i > 0,
+        hasNext: i < menu.length - 1,
+        prevLabel: i > 0 ? (lang === 'ro' ? menu[i - 1].ro : menu[i - 1].en) : '',
+        nextLabel: i < menu.length - 1 ? (lang === 'ro' ? menu[i + 1].ro : menu[i + 1].en) : '',
+        onPrev: () => i > 0 && this.jumpTo(menu[i - 1].key),
+        onNext: () => i < menu.length - 1 && this.jumpTo(menu[i + 1].key),
+        anchor: 'cat-' + c.key,
+        title: lang === 'ro' ? c.ro : c.en,
+        subtitle: lang === 'ro' ? c.en : c.ro,
+        note: c.note || '',
+        items: c.items.map(it => ({
+          name: it.name,
+          desc: it.desc || '',
+          price: it.prices ? it.prices.map(p => p[0] + ' · ' + p[1] + ' ' + t.lei).join('\n') : (it.price != null ? (it.size ? it.size + ' · ' : '') + it.price + ' ' + t.lei : (it.size || '')),
+          showImg: this.state.group !== 'drinks',
+          hasImg: this.state.group !== 'drinks' && !NO_IMG.includes(it.name),
+          img: './assets/guava/menu/' + slug(it.name) + '.webp'
+        }))
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>
