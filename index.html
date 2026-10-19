@@ -522,8 +522,16 @@ class Component extends DCLogic {
         };
       }),
       setTabsRef: el => { this._tabs = el; },
-      tabsLeft: () => { if (this._tabs) this._tabs.scrollBy({ left: -this._tabs.clientWidth * 0.7, behavior: 'smooth' }); },
-      tabsRight: () => { if (this._tabs) this._tabs.scrollBy({ left: this._tabs.clientWidth * 0.7, behavior: 'smooth' }); },
+      tabsLeft: () => {
+        const b = this._tabs; if (!b) return;
+        if (b.scrollLeft <= 2) { const m = this.state.menu; if (m.length) this.jumpTo(m[m.length - 1].key); }
+        else b.scrollBy({ left: -b.clientWidth * 0.7, behavior: 'smooth' });
+      },
+      tabsRight: () => {
+        const b = this._tabs; if (!b) return;
+        if (b.scrollLeft + b.clientWidth >= b.scrollWidth - 2) { const m = this.state.menu; if (m.length) { b.scrollTo({ left: 0, behavior: 'smooth' }); this.jumpTo(m[0].key); } }
+        else b.scrollBy({ left: b.clientWidth * 0.7, behavior: 'smooth' });
+      },
       headerLangs: ['en', 'ro'].map(l => ({
         label: l.toUpperCase(),
         onClick: () => this.setLang(l),
