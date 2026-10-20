@@ -569,7 +569,7 @@ class Component extends DCLogic {
       iconSrc: './assets/guava/logo-icon.svg',
       navBorder: 'rgba(180,30,30,0.5)',
       groupEmpty: menu.length === 0 && this.state.group !== 'food',
-      groups: ['food', 'drinks', 'shisha'].map(g => {
+      groups: ['food', 'shisha', 'drinks'].map(g => {
         const on = g === this.state.group;
         return {
           label: t[g],
