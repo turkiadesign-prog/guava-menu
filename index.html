@@ -425,7 +425,7 @@ class Component extends DCLogic {
     clearTimeout(this._stallTimer);
     const v = this._lvid; if (!v) return;
     const t0 = v.currentTime;
-    this._stallTimer = setTimeout(() => { if (this.state.loading && v.currentTime === t0) this.endLoader(); }, 3000);
+    this._stallTimer = setTimeout(() => { if (this.state.loading && v.currentTime === t0 && v.paused && v.play) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } }, 3000);
   }
 
   playBg() {
@@ -561,7 +561,7 @@ class Component extends DCLogic {
       loaderOpacity: this.state.loaderFade ? 0 : 1,
       setLoaderBoxRef: el => { this._lbox = el; },
       setLoaderGlRef: el => { if (el) { this._lgc = el; this.startLoaderGl(); } },
-      setLoaderVidRef: el => { if (el) { this._lvid = el; this.startLoaderGl(); } if (el && !el._gvBound) { el._gvBound = true; el.muted = true; el.addEventListener('ended', () => this.endLoader()); el.addEventListener('error', () => this.endLoader()); el.addEventListener('stalled', () => this.armStall()); el.addEventListener('waiting', () => this.armStall()); const p = el.play && el.play(); if (p && p.catch) p.catch(() => this.endLoader()); this.armStall(); } },
+      setLoaderVidRef: el => { if (el) { this._lvid = el; this.startLoaderGl(); } if (el && !el._gvBound) { el._gvBound = true; el.muted = true; el.addEventListener('ended', () => this.endLoader()); el.addEventListener('loadeddata', () => { if (this.state.loading && el.paused) { const p = el.play(); if (p && p.catch) p.catch(() => {}); } }); el.addEventListener('error', () => { /* Keep branded loader visible until the safety timeout. */ }); el.addEventListener('stalled', () => this.armStall()); el.addEventListener('waiting', () => this.armStall()); const p = el.play && el.play(); if (p && p.catch) p.catch(() => { /* Mobile autoplay can reject before playback starts; do not dismiss the intro. */ }); this.armStall(); } },
       setHeaderCanvasRef: el => { if (el) { this._hcv = el; this._hctx = null; } },
       setCanvasRef: el => { if (el) { this._cv = el; this.startLeaves(); } },
       growDelay: '0.2s',
