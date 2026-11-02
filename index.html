@@ -170,6 +170,7 @@
 </footer>
 
 </x-dc>
+<script src="./sanity-menu.js"></script>
 <script type="text/x-dc" data-dc-script data-props="{&quot;defaultLanguage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ro&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;'en' | 'ro'&quot;},&quot;showLoading&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
 const T = {
   en: { menu: 'Menu', food: 'Food', drinks: 'Drinks', shisha: 'Shisha', drinksSoon: 'Menu coming soon', pages: 'Pages', language: 'Language', lei: 'lei' },
@@ -475,7 +476,7 @@ class Component extends DCLogic {
     window.addEventListener('pointerdown', this._kick);
     document.addEventListener('visibilitychange', this._kick);
     window.addEventListener('pageshow', this._kick);
-    Promise.resolve(GUAVA_MENU).then(d => {
+    window.loadGuavaSanityMenu(GUAVA_MENU).then(d => {
       const data = { food: d.food || [], drinks: d.drinks || [], shisha: d.shisha || [] };
       this.setState({ data, menu: data.food, active: (data.food[0] && data.food[0].key) || null }, () => this.setupSpy());
     }).catch(() => {});
@@ -633,8 +634,8 @@ class Component extends DCLogic {
           desc: (lang === 'ro' && it.descRo) || it.desc || '',
           price: it.prices ? it.prices.map(p => p[0] + ' · ' + p[1] + ' ' + t.lei).join('\n') : (it.price != null ? (it.size ? it.size + ' · ' : '') + it.price + ' ' + t.lei : (it.size || '')),
           showImg: this.state.group === 'food',
-          hasImg: this.state.group === 'food' && !NO_IMG.includes(it.name),
-          img: './assets/guava/menu/' + slug(it.name) + '.webp'
+          hasImg: this.state.group === 'food' && (!!it.imageUrl || !NO_IMG.includes(it.name)),
+          img: it.imageUrl || ('./assets/guava/menu/' + slug(it.name) + '.webp')
         }))
       }))
     };
